@@ -1,4 +1,4 @@
-package com.bnkk.padc_mm_news;
+package com.bnkk.padcmmnews;
 
 import org.junit.Test;
 

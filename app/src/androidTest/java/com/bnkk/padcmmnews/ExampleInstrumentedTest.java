@@ -1,4 +1,4 @@
-package com.bnkk.padc_mm_news;
+package com.bnkk.padcmmnews;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.bnkk.padc_mm_news", appContext.getPackageName());
+        assertEquals("com.bnkk.padcmmnews", appContext.getPackageName());
     }
 }
