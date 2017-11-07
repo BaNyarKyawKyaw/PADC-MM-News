@@ -27,11 +27,12 @@
         tools:context="com.bnkk.padcmmnews.activities.NewsListActivity"
         tools:showIn="@layout/activity_news_list">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Hello World!" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_news_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.v7.widget.RecyclerView>
 
     </RelativeLayout>
 
@@ -41,6 +42,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@drawable/ic_create_new" />
 
 </android.support.design.widget.CoordinatorLayout>
