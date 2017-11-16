@@ -70,7 +70,7 @@
         <ImageView
             android:id="@+id/iv_news_hero_image"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="@dimen/view_item_img_height"
             android:layout_below="@id/tv_brief_news"
             android:layout_marginTop="@dimen/margin_medium_2"
             android:src="@drawable/img_news_placeholder" />

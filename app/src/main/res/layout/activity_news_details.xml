@@ -32,7 +32,7 @@
                     android:layout_width="@dimen/logo_size"
                     android:layout_height="@dimen/logo_size"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="@dimen/news_details_publication_logo_marign_button"
+                    android:layout_marginBottom="@dimen/news_details_publication_logo_margin_button"
                     android:layout_marginLeft="@dimen/margin_medium_2"
                     android:src="@drawable/img_publication_logo_placeholder" />
 
@@ -92,9 +92,25 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_medium_2"
                 android:lineSpacingMultiplier="1.3"
-                android:paddingBottom="80dp"
                 android:text="@string/dummy_news"
                 android:textColor="@color/primary_text" />
+
+            <TextView
+                android:id="@+id/lb_related_news"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_news_details"
+                android:layout_marginLeft="@dimen/margin_medium_2"
+                android:text="@string/related_news"
+                android:textColor="@color/primary_text"
+                android:textSize="@dimen/text_regular_3x" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_related_news_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/lb_related_news"
+                android:paddingBottom="60dp" />
         </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>
 
@@ -105,7 +121,8 @@
         android:layout_gravity="bottom"
         android:background="@color/white"
         android:orientation="horizontal"
-        android:padding="@dimen/margin_medium_2"
+        android:paddingLeft="@dimen/margin_medium"
+        android:paddingRight="@dimen/margin_medium"
         android:weightSum="5">
 
         <TextView
