@@ -3,6 +3,8 @@ package com.bnkk.padcmmnews.activities;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,12 +18,20 @@ import com.bnkk.padcmmnews.R;
 import com.bnkk.padcmmnews.adapters.NewsAdapter;
 import com.bnkk.padcmmnews.delegates.NewsItemDelegate;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class NewsListActivity extends AppCompatActivity implements NewsItemDelegate {
+
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_list);
+        ButterKnife.bind(this, this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -29,8 +39,11 @@ public class NewsListActivity extends AppCompatActivity implements NewsItemDeleg
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /*
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                        */
+                drawerLayout.openDrawer(GravityCompat.START);
             }
         });
 
