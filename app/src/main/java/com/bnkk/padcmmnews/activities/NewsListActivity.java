@@ -18,6 +18,7 @@ import com.bnkk.padcmmnews.R;
 import com.bnkk.padcmmnews.adapters.NewsAdapter;
 import com.bnkk.padcmmnews.components.EmptyViewPod;
 import com.bnkk.padcmmnews.components.SmartRecyclerView;
+import com.bnkk.padcmmnews.components.SmartScrollListener;
 import com.bnkk.padcmmnews.delegates.NewsItemDelegate;
 
 import butterknife.BindView;
@@ -33,6 +34,8 @@ public class NewsListActivity extends AppCompatActivity implements NewsItemDeleg
 
     @BindView(R.id.vp_empty_news)
     EmptyViewPod vpEmptyNews;
+
+    private SmartScrollListener mSmartScrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +54,10 @@ public class NewsListActivity extends AppCompatActivity implements NewsItemDeleg
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                         */
-                drawerLayout.openDrawer(GravityCompat.START);
+
+                //drawerLayout.openDrawer(GravityCompat.START);
+                Intent intent = LoginRegisterActivity.newIntent(getApplicationContext());
+                startActivity(intent);
             }
         });
 
@@ -60,6 +66,15 @@ public class NewsListActivity extends AppCompatActivity implements NewsItemDeleg
                 LinearLayoutManager.VERTICAL, false));
         NewsAdapter newsAdapter = new NewsAdapter(getApplicationContext(), this);
         srvNews.setAdapter(newsAdapter);
+
+        mSmartScrollListener = new SmartScrollListener(new SmartScrollListener.OnSmartScrollListener() {
+            @Override
+            public void onListEndReached() {
+                Snackbar.make(srvNews, "This is all the data for NOW", Snackbar.LENGTH_LONG).show();
+            }
+        });
+
+        srvNews.addOnScrollListener(mSmartScrollListener);
     }
 
     @Override
