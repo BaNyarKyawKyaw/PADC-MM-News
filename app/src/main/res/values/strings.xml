@@ -18,4 +18,6 @@
     <string name="btn_comment_news">Comment</string>
     <string name="btn_send_to_news">Send To</string>
     <string name="related_news">Related News</string>
+    <string name="msg_generic_no_data">No data to display</string>
+    <string name="refresh">Refresh</string>
 </resources>

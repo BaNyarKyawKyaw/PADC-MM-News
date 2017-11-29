@@ -16,6 +16,8 @@ import android.view.View;
 
 import com.bnkk.padcmmnews.R;
 import com.bnkk.padcmmnews.adapters.NewsAdapter;
+import com.bnkk.padcmmnews.components.EmptyViewPod;
+import com.bnkk.padcmmnews.components.SmartRecyclerView;
 import com.bnkk.padcmmnews.delegates.NewsItemDelegate;
 
 import butterknife.BindView;
@@ -25,6 +27,12 @@ public class NewsListActivity extends AppCompatActivity implements NewsItemDeleg
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
+
+    @BindView(R.id.rv_news_list)
+    SmartRecyclerView srvNews;
+
+    @BindView(R.id.vp_empty_news)
+    EmptyViewPod vpEmptyNews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +55,11 @@ public class NewsListActivity extends AppCompatActivity implements NewsItemDeleg
             }
         });
 
-        RecyclerView rvNews = findViewById(R.id.rv_news_list);
-        rvNews.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
+        srvNews.setEmptyView(vpEmptyNews);
+        srvNews.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
                 LinearLayoutManager.VERTICAL, false));
         NewsAdapter newsAdapter = new NewsAdapter(getApplicationContext(), this);
-        rvNews.setAdapter(newsAdapter);
+        srvNews.setAdapter(newsAdapter);
     }
 
     @Override
