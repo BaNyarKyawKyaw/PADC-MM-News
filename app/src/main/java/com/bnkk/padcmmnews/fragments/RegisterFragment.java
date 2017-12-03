@@ -17,7 +17,7 @@ import butterknife.ButterKnife;
  * Created by E5-575G on 11/30/2017.
  */
 
-public class RegisterFragment extends Fragment {
+public class RegisterFragment extends BaseFragment {
 
     private LoginRegisterDelegate mLoginRegisterDelegate;
 

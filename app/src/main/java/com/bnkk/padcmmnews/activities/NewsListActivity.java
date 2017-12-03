@@ -20,11 +20,16 @@ import com.bnkk.padcmmnews.components.EmptyViewPod;
 import com.bnkk.padcmmnews.components.SmartRecyclerView;
 import com.bnkk.padcmmnews.components.SmartScrollListener;
 import com.bnkk.padcmmnews.delegates.NewsItemDelegate;
+import com.bnkk.padcmmnews.events.TapNewsEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class NewsListActivity extends AppCompatActivity implements NewsItemDelegate {
+public class NewsListActivity extends BaseActivity implements NewsItemDelegate {
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -78,6 +83,20 @@ public class NewsListActivity extends AppCompatActivity implements NewsItemDeleg
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -121,6 +140,13 @@ public class NewsListActivity extends AppCompatActivity implements NewsItemDeleg
 
     @Override
     public void onTapNews() {
+        Intent intent = NewsDetailsActivity.newIntent(getApplicationContext());
+        startActivity(intent);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTapNewsEvent(TapNewsEvent event) {
+        event.getNewsId();
         Intent intent = NewsDetailsActivity.newIntent(getApplicationContext());
         startActivity(intent);
     }

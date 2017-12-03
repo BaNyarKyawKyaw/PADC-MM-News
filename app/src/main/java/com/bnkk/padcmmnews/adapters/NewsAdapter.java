@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bnkk.padcmmnews.R;
+import com.bnkk.padcmmnews.data.vo.NewsVO;
 import com.bnkk.padcmmnews.delegates.NewsItemDelegate;
 import com.bnkk.padcmmnews.viewholders.NewsViewHolder;
 
@@ -14,13 +15,12 @@ import com.bnkk.padcmmnews.viewholders.NewsViewHolder;
  * Created by E5-575G on 11/4/2017.
  */
 
-public class NewsAdapter extends RecyclerView.Adapter<NewsViewHolder> {
+public class NewsAdapter extends BaseRecyclerAdapter<NewsViewHolder, NewsVO> {
 
-    private LayoutInflater mLayoutInflater;
     private NewsItemDelegate mNewsItemDelegate;
 
     public NewsAdapter(Context context, NewsItemDelegate newsItemDelegate) {
-        mLayoutInflater = LayoutInflater.from(context);
+        super(context);
         mNewsItemDelegate = newsItemDelegate;
     }
 
@@ -35,12 +35,12 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(NewsViewHolder holder, int position) {
-
+    public int getItemCount() {
+        return 15;
     }
 
     @Override
-    public int getItemCount() {
-        return 15;
+    public void onBindViewHolder(NewsViewHolder holder, int position) {
+
     }
 }

@@ -18,7 +18,7 @@ import butterknife.OnClick;
  * Created by E5-575G on 11/30/2017.
  */
 
-public class LoginFragment extends Fragment {
+public class LoginFragment extends BaseFragment {
 
     private LoginRegisterDelegate mLoginRegisterDelegate;
 
