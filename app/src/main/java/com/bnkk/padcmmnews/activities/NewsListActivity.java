@@ -20,6 +20,7 @@ import com.bnkk.padcmmnews.components.EmptyViewPod;
 import com.bnkk.padcmmnews.components.SmartRecyclerView;
 import com.bnkk.padcmmnews.components.SmartScrollListener;
 import com.bnkk.padcmmnews.delegates.NewsItemDelegate;
+import com.bnkk.padcmmnews.events.RestApiEvents;
 import com.bnkk.padcmmnews.events.TapNewsEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -41,6 +42,7 @@ public class NewsListActivity extends BaseActivity implements NewsItemDelegate {
     EmptyViewPod vpEmptyNews;
 
     private SmartScrollListener mSmartScrollListener;
+    private NewsAdapter newsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +71,7 @@ public class NewsListActivity extends BaseActivity implements NewsItemDelegate {
         srvNews.setEmptyView(vpEmptyNews);
         srvNews.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
                 LinearLayoutManager.VERTICAL, false));
-        NewsAdapter newsAdapter = new NewsAdapter(getApplicationContext(), this);
+        newsAdapter = new NewsAdapter(getApplicationContext(), this);
         srvNews.setAdapter(newsAdapter);
 
         mSmartScrollListener = new SmartScrollListener(new SmartScrollListener.OnSmartScrollListener() {
@@ -149,5 +151,15 @@ public class NewsListActivity extends BaseActivity implements NewsItemDelegate {
         event.getNewsId();
         Intent intent = NewsDetailsActivity.newIntent(getApplicationContext());
         startActivity(intent);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewsDataLoaded(RestApiEvents.NewsDataLoadedEvent event) {
+        newsAdapter.appendNewData(event.getLoadedNews());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onErrorInvokingAPI(RestApiEvents.ErrorInvokingAPIEvent event) {
+        Snackbar.make(srvNews, event.getErrorMsg(), Snackbar.LENGTH_INDEFINITE).show();
     }
 }
