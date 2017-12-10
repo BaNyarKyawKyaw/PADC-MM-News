@@ -1,6 +1,7 @@
 package com.bnkk.padcmmnews.network.responses;
 
 import com.bnkk.padcmmnews.data.vo.NewsVO;
+import com.bnkk.padcmmnews.network.SFCResponse;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by E5-575G on 12/3/2017.
  */
 
-public class GetNewsResponse {
+public class GetNewsResponse extends SFCResponse {
 
     @SerializedName("code")
     private int code;

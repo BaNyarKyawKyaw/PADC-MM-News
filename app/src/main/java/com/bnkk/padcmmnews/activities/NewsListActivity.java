@@ -3,12 +3,10 @@ package com.bnkk.padcmmnews.activities;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +17,8 @@ import com.bnkk.padcmmnews.adapters.NewsAdapter;
 import com.bnkk.padcmmnews.components.EmptyViewPod;
 import com.bnkk.padcmmnews.components.SmartRecyclerView;
 import com.bnkk.padcmmnews.components.SmartScrollListener;
+import com.bnkk.padcmmnews.data.models.NewsModel;
+import com.bnkk.padcmmnews.data.vo.NewsVO;
 import com.bnkk.padcmmnews.delegates.NewsItemDelegate;
 import com.bnkk.padcmmnews.events.RestApiEvents;
 import com.bnkk.padcmmnews.events.TapNewsEvent;
@@ -26,6 +26,8 @@ import com.bnkk.padcmmnews.events.TapNewsEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,8 +43,11 @@ public class NewsListActivity extends BaseActivity implements NewsItemDelegate {
     @BindView(R.id.vp_empty_news)
     EmptyViewPod vpEmptyNews;
 
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
+
     private SmartScrollListener mSmartScrollListener;
-    private NewsAdapter newsAdapter;
+    private NewsAdapter mNewsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,13 +76,22 @@ public class NewsListActivity extends BaseActivity implements NewsItemDelegate {
         srvNews.setEmptyView(vpEmptyNews);
         srvNews.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
                 LinearLayoutManager.VERTICAL, false));
-        newsAdapter = new NewsAdapter(getApplicationContext(), this);
-        srvNews.setAdapter(newsAdapter);
+        mNewsAdapter = new NewsAdapter(getApplicationContext(), this);
+        srvNews.setAdapter(mNewsAdapter);
 
         mSmartScrollListener = new SmartScrollListener(new SmartScrollListener.OnSmartScrollListener() {
             @Override
             public void onListEndReached() {
-                Snackbar.make(srvNews, "This is all the data for NOW", Snackbar.LENGTH_LONG).show();
+//                Snackbar.make(srvNews, "This is all the data for NOW", Snackbar.LENGTH_LONG).show();
+
+                NewsModel.getObjInstance().loadMoreNews();
+            }
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                NewsModel.getObjInstance().forceRefreshNews();
             }
         });
 
@@ -89,6 +103,13 @@ public class NewsListActivity extends BaseActivity implements NewsItemDelegate {
         super.onStart();
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
+        }
+
+        List<NewsVO> newsList = NewsModel.getObjInstance().getNews();
+        if (!newsList.isEmpty()) {
+            mNewsAdapter.setNewData(newsList);
+        } else {
+            swipeRefreshLayout.setRefreshing(true);
         }
     }
 
@@ -155,11 +176,13 @@ public class NewsListActivity extends BaseActivity implements NewsItemDelegate {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewsDataLoaded(RestApiEvents.NewsDataLoadedEvent event) {
-        newsAdapter.appendNewData(event.getLoadedNews());
+        mNewsAdapter.appendNewData(event.getLoadedNews());
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onErrorInvokingAPI(RestApiEvents.ErrorInvokingAPIEvent event) {
         Snackbar.make(srvNews, event.getErrorMsg(), Snackbar.LENGTH_INDEFINITE).show();
+        swipeRefreshLayout.setRefreshing(false);
     }
 }

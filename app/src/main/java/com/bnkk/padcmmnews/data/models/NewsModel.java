@@ -35,7 +35,15 @@ public class NewsModel {
         return objInstance;
     }
 
-    public void StartLoadingNews() {
+    public void startLoadingNews() {
+        MMNewsDataAgentImpl.getObjInstance().loadMMNews(AppConstants.ACCESS_TOKEN, mmPageIndex);
+    }
+
+    public List<NewsVO> getNews() {
+        return mNews;
+    }
+
+    public void loadMoreNews() {
         MMNewsDataAgentImpl.getObjInstance().loadMMNews(AppConstants.ACCESS_TOKEN, mmPageIndex);
     }
 
@@ -43,5 +51,11 @@ public class NewsModel {
     public void onNewsDataLoaded(RestApiEvents.NewsDataLoadedEvent event) {
         mNews.addAll(event.getLoadedNews());
         mmPageIndex = event.getLoadedPageIndex() + 1;
+    }
+
+    public void forceRefreshNews() {
+        mNews = new ArrayList<>();
+        mmPageIndex = 1;
+        startLoadingNews();
     }
 }
