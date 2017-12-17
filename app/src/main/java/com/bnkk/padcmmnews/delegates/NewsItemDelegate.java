@@ -5,9 +5,14 @@ package com.bnkk.padcmmnews.delegates;
  */
 
 public interface NewsItemDelegate {
+
     void onTapComment();
+
     void onTapSendTo();
+
     void onTapFavourite();
+
     void onTapStatistics();
+
     void onTapNews();
 }
