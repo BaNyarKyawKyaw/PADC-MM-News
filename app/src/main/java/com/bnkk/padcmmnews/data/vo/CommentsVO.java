@@ -1,5 +1,8 @@
 package com.bnkk.padcmmnews.data.vo;
 
+import android.content.ContentValues;
+
+import com.bnkk.padcmmnews.persistence.NewsContract;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -34,5 +37,18 @@ public class CommentsVO {
 
     public ActedUserVO getActedUser() {
         return actedUser;
+    }
+
+    public ContentValues parseToContentValues(String newsId) {
+
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(NewsContract.CommentActionsEntry.COLUMN_COMMENT_ID, commentId);
+        contentValues.put(NewsContract.CommentActionsEntry.COLUMN_COMMENT, comment);
+        contentValues.put(NewsContract.CommentActionsEntry.COLUMN_COMMENT_DATE, commentDate);
+        contentValues.put(NewsContract.CommentActionsEntry.COLUMN_USER_ID, actedUser.getUserId());
+        contentValues.put(NewsContract.CommentActionsEntry.COLUMN_NEWS_ID, newsId);
+
+        return contentValues;
     }
 }

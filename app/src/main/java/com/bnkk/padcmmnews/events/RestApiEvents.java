@@ -1,5 +1,7 @@
 package com.bnkk.padcmmnews.events;
 
+import android.content.Context;
+
 import com.bnkk.padcmmnews.data.vo.NewsVO;
 
 import java.util.List;
@@ -28,15 +30,17 @@ public class RestApiEvents {
         }
     }
 
-    public static class NewsDataLoadedEvent{
+    public static class NewsDataLoadedEvent {
         // when data is loaded
 
         private int loadedPageIndex;
         private List<NewsVO> loadedNews;
+        private Context context;
 
-        public NewsDataLoadedEvent(int loadedPageIndex, List<NewsVO> loadedNews) {
+        public NewsDataLoadedEvent(int loadedPageIndex, List<NewsVO> loadedNews, Context context) {
             this.loadedPageIndex = loadedPageIndex;
             this.loadedNews = loadedNews;
+            this.context = context;
         }
 
         public int getLoadedPageIndex() {
@@ -45,6 +49,10 @@ public class RestApiEvents {
 
         public List<NewsVO> getLoadedNews() {
             return loadedNews;
+        }
+
+        public Context getContext() {
+            return context;
         }
     }
 }

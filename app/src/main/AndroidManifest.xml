@@ -36,6 +36,12 @@
 
         </activity>
 
+        <provider
+            android:name=".persistence.NewsProvider"
+            android:authorities="com.bnkk.padcmmnews"
+            android:exported="false"
+            android:syncable="true" />
+
         <receiver android:name=".receivers.InternetStateReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />

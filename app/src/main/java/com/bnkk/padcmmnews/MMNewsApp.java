@@ -15,6 +15,6 @@ public class MMNewsApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        NewsModel.getObjInstance().startLoadingNews();
+        NewsModel.getObjInstance().startLoadingNews(getApplicationContext());
     }
 }

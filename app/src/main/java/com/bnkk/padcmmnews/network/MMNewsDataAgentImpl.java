@@ -1,5 +1,7 @@
 package com.bnkk.padcmmnews.network;
 
+import android.content.Context;
+
 import com.bnkk.padcmmnews.events.RestApiEvents;
 import com.bnkk.padcmmnews.network.responses.GetNewsResponse;
 
@@ -47,7 +49,7 @@ public class MMNewsDataAgentImpl implements MMNewDataAgent {
     }
 
     @Override
-    public void loadMMNews(String accessToken, int pageNo) {
+    public void loadMMNews(String accessToken, int pageNo, final Context context) {
         Call<GetNewsResponse> loadMMNewsCall = theAPI.loadMMNews(pageNo, accessToken);
         loadMMNewsCall.enqueue(new SFCCallBack<GetNewsResponse>() {
             @Override
@@ -56,7 +58,7 @@ public class MMNewsDataAgentImpl implements MMNewDataAgent {
                 GetNewsResponse getNewsResponse = response.body();
                 if (getNewsResponse != null && getNewsResponse.getNewsList().size() > 0) {
                     RestApiEvents.NewsDataLoadedEvent newsDataLoadedEvent = new RestApiEvents.NewsDataLoadedEvent
-                            (getNewsResponse.getPageNo(), getNewsResponse.getNewsList());
+                            (getNewsResponse.getPageNo(), getNewsResponse.getNewsList(), context);
                     EventBus.getDefault().post(newsDataLoadedEvent);
                 }
             }

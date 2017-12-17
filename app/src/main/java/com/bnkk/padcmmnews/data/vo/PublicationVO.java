@@ -1,5 +1,8 @@
 package com.bnkk.padcmmnews.data.vo;
 
+import android.content.ContentValues;
+
+import com.bnkk.padcmmnews.persistence.NewsContract;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -27,5 +30,16 @@ public class PublicationVO {
 
     public String getLogo() {
         return logo;
+    }
+
+    public ContentValues parseToContentValues() {
+
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(NewsContract.PublicationsEntry.COLUMN_PUBLICATION_ID, publicationId);
+        contentValues.put(NewsContract.PublicationsEntry.COLUMN_TITLE, title);
+        contentValues.put(NewsContract.PublicationsEntry.COLUMN_LOGO, logo);
+
+        return contentValues;
     }
 }

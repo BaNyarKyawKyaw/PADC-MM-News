@@ -51,11 +51,14 @@ public class NewsViewHolder extends BaseViewHolder<NewsVO> {
     @Override
     public void setData(NewsVO data) {
         if (data != null) {
-            Glide
-                    .with(ivPublicationLogo.getContext())
-                    .load(data.getPublication().getLogo())
-                    .into(ivPublicationLogo);
-            tvPublicationName.setText(data.getPublication().getTitle());
+
+            if (data.getPublication() != null) {
+                Glide
+                        .with(ivPublicationLogo.getContext())
+                        .load(data.getPublication().getLogo())
+                        .into(ivPublicationLogo);
+                tvPublicationName.setText(data.getPublication().getTitle());
+            }
 
             tvPublishedDate.setText(data.getPostedDate());
 
@@ -65,9 +68,11 @@ public class NewsViewHolder extends BaseViewHolder<NewsVO> {
                     .load(data.getImages())
                     .into(ivNewsHeroImage);
 
-//            tvNewsStaticalData.setText(Integer.toString(data.getFavouriteActions().size())
-//                    + " likes - " + Integer.toString(data.getComments().size()) + " comments - Sent to "
-//                    + Integer.toString(data.getSendTos().size()) + " people");
+            if (data.getFavouriteActions() != null && data.getComments() != null && data.getSendTos() != null) {
+                tvNewsStaticalData.setText(String.valueOf(data.getFavouriteActions().size())
+                        + " likes - " + String.valueOf(data.getComments().size()) + " comments - Sent to "
+                        + String.valueOf(data.getSendTos().size()) + " people");
+            }
         }
     }
 
