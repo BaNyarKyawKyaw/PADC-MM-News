@@ -1,5 +1,7 @@
 package com.bnkk.padcmmnews.delegates;
 
+import com.bnkk.padcmmnews.data.vo.NewsVO;
+
 /**
  * Created by E5-575G on 11/11/2017.
  */
@@ -14,5 +16,5 @@ public interface NewsItemDelegate {
 
     void onTapStatistics();
 
-    void onTapNews();
+    void onTapNews(NewsVO news);
 }

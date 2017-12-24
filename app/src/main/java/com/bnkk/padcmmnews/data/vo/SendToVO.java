@@ -1,6 +1,7 @@
 package com.bnkk.padcmmnews.data.vo;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import com.bnkk.padcmmnews.persistence.NewsContract;
 import com.google.gson.annotations.SerializedName;
@@ -39,7 +40,7 @@ public class SendToVO {
         return receiver;
     }
 
-    public ContentValues parseToContent(String newsId) {
+    public ContentValues parseToContentValues(String newsId) {
 
         ContentValues contentValues = new ContentValues();
 
@@ -50,5 +51,18 @@ public class SendToVO {
         contentValues.put(NewsContract.SendToEntry.COLUMN_NEWS_ID, newsId);
 
         return contentValues;
+    }
+
+    public static SendToVO parseFromCursor(Cursor cursor) {
+
+        SendToVO sendTo = new SendToVO();
+
+        sendTo.sendToId = cursor.getString(cursor.getColumnIndex(NewsContract.SendToEntry.COLUMN_SEND_TO_ID));
+        sendTo.sendDate = cursor.getString(cursor.getColumnIndex(NewsContract.SendToEntry.COLUMN_SEND_TO_DATE));
+
+        sendTo.sender = ActedUserVO.parseFromCursor(cursor);
+        sendTo.receiver = ActedUserVO.parseFromCursor(cursor);
+
+        return sendTo;
     }
 }

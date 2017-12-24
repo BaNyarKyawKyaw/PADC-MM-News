@@ -1,6 +1,7 @@
 package com.bnkk.padcmmnews.data.vo;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import com.bnkk.padcmmnews.persistence.NewsContract;
 import com.google.gson.annotations.SerializedName;
@@ -41,5 +42,16 @@ public class ActedUserVO {
         contentValues.put(NewsContract.ActedUserEntry.COLUMN_PROFILE_IMAGE, profileImage);
 
         return contentValues;
+    }
+
+    public static ActedUserVO parseFromCursor(Cursor cursor) {
+
+        ActedUserVO actedUser = new ActedUserVO();
+
+        actedUser.userId = cursor.getString(cursor.getColumnIndex(NewsContract.ActedUserEntry.COLUMN_USER_ID));
+        actedUser.userName = cursor.getString(cursor.getColumnIndex(NewsContract.ActedUserEntry.COLUMN_USER_NAME));
+        actedUser.profileImage = cursor.getString(cursor.getColumnIndex(NewsContract.ActedUserEntry.COLUMN_PROFILE_IMAGE));
+
+        return actedUser;
     }
 }

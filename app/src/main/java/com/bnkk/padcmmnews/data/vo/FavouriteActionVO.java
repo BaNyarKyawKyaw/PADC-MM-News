@@ -1,6 +1,7 @@
 package com.bnkk.padcmmnews.data.vo;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import com.bnkk.padcmmnews.persistence.NewsContract;
 import com.google.gson.annotations.SerializedName;
@@ -42,5 +43,17 @@ public class FavouriteActionVO {
         contentValues.put(NewsContract.FavouriteActionsEntry.COLUMN_NEWS_ID, newsId);
 
         return contentValues;
+    }
+
+    public static FavouriteActionVO parseFromCursor(Cursor cursor) {
+
+        FavouriteActionVO favouriteAction = new FavouriteActionVO();
+
+        favouriteAction.favouriteId = cursor.getString(cursor.getColumnIndex(NewsContract.FavouriteActionsEntry.COLUMN_FAVOURITE_ID));
+        favouriteAction.favouriteDate = cursor.getString(cursor.getColumnIndex(NewsContract.FavouriteActionsEntry.COLUMN_FAVOURITE_DATE));
+
+        favouriteAction.actedUser = ActedUserVO.parseFromCursor(cursor);
+
+        return favouriteAction;
     }
 }

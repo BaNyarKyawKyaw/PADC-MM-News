@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,6 +28,57 @@ public class NewsProvider extends ContentProvider {
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
+    private static final SQLiteQueryBuilder sNewsWithPublication_IJ;
+
+    static {
+        sNewsWithPublication_IJ = new SQLiteQueryBuilder();
+        sNewsWithPublication_IJ.setTables(
+                NewsContract.NewsEntry.TABLE_NAME + " INNER JOIN " +
+                        NewsContract.PublicationsEntry.TABLE_NAME + " ON " +
+                        NewsContract.NewsEntry.TABLE_NAME + "." + NewsContract.NewsEntry.COLUMN_PUBLICATION_ID + " = " +
+                        NewsContract.PublicationsEntry.TABLE_NAME + "." + NewsContract.PublicationsEntry.COLUMN_PUBLICATION_ID
+        );
+    }
+
+    private static final SQLiteQueryBuilder sFavoriteActionWithUser_IJ;
+
+    static {
+        sFavoriteActionWithUser_IJ = new SQLiteQueryBuilder();
+        sFavoriteActionWithUser_IJ.setTables(
+                NewsContract.FavouriteActionsEntry.TABLE_NAME + " INNER JOIN " +
+                        NewsContract.ActedUserEntry.TABLE_NAME + " ON " +
+                        NewsContract.FavouriteActionsEntry.TABLE_NAME + "." + NewsContract.FavouriteActionsEntry.COLUMN_USER_ID + " = " +
+                        NewsContract.ActedUserEntry.TABLE_NAME + "." + NewsContract.ActedUserEntry.COLUMN_USER_ID
+        );
+    }
+
+
+    private static final SQLiteQueryBuilder sCommentActionWithUser_IJ;
+
+    static {
+        sCommentActionWithUser_IJ = new SQLiteQueryBuilder();
+        sCommentActionWithUser_IJ.setTables(
+                NewsContract.CommentActionsEntry.TABLE_NAME + " INNER JOIN " +
+                        NewsContract.ActedUserEntry.TABLE_NAME + " ON " +
+                        NewsContract.CommentActionsEntry.TABLE_NAME + "." + NewsContract.CommentActionsEntry.COLUMN_USER_ID + " = " +
+                        NewsContract.ActedUserEntry.TABLE_NAME + "." + NewsContract.ActedUserEntry.COLUMN_USER_ID
+        );
+    }
+
+    private static final SQLiteQueryBuilder sSendActionWithUser_IJ;
+
+    static {
+        sSendActionWithUser_IJ = new SQLiteQueryBuilder();
+        sSendActionWithUser_IJ.setTables(
+                NewsContract.SendToEntry.TABLE_NAME + " INNER JOIN " +
+                        NewsContract.ActedUserEntry.TABLE_NAME + " ON " +
+                        NewsContract.SendToEntry.TABLE_NAME + "." + NewsContract.SendToEntry.COLUMN_SENDER_ID + " = " +
+                        NewsContract.ActedUserEntry.TABLE_NAME + "." + NewsContract.ActedUserEntry.COLUMN_USER_ID +
+                        " INNER JOIN " + NewsContract.ActedUserEntry.TABLE_NAME + " AS au ON " +
+                        "au." + NewsContract.ActedUserEntry.COLUMN_USER_ID
+        );
+    }
+
     private NewsDBHelper mNewsDBHelper;
 
     @Override
@@ -40,13 +92,54 @@ public class NewsProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
 
-        Cursor queryCursor = mNewsDBHelper.getReadableDatabase().query(getTableName(uri),
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                sortOrder);
+        Cursor queryCursor;
+
+        switch (sUriMatcher.match(uri)) {
+            case NEWS:
+                queryCursor = sNewsWithPublication_IJ.query(mNewsDBHelper.getReadableDatabase(),
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case FAVOURITE_ACTION:
+                queryCursor = sFavoriteActionWithUser_IJ.query(mNewsDBHelper.getReadableDatabase(),
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case COMMENT_ACTION:
+                queryCursor = sCommentActionWithUser_IJ.query(mNewsDBHelper.getReadableDatabase(),
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case SEND_TO_ACTION:
+                queryCursor = sSendActionWithUser_IJ.query(mNewsDBHelper.getReadableDatabase(),
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            default:
+                queryCursor = mNewsDBHelper.getReadableDatabase().query(getTableName(uri),
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+        }
 
         if (getContext() != null) {
             queryCursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -116,7 +209,7 @@ public class NewsProvider extends ContentProvider {
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
-            db.close();
+            //db.close();
         }
 
         Context context = getContext();

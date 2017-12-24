@@ -1,11 +1,13 @@
 package com.bnkk.padcmmnews.data.vo;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.bnkk.padcmmnews.persistence.NewsContract;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,7 +40,7 @@ public class NewsVO {
     @SerializedName("comments")
     private List<CommentsVO> comments;
 
-    @SerializedName("send-tos")
+    @SerializedName("sent-tos")
     private List<SendToVO> sendTos;
 
     public String getNewsId() {
@@ -54,6 +56,9 @@ public class NewsVO {
     }
 
     public List<String> getImages() {
+        if (images == null)
+            images = new ArrayList<>();
+
         return images;
     }
 
@@ -90,7 +95,7 @@ public class NewsVO {
         return contentValues;
     }
 
-    public static NewsVO parseFromCursor(Cursor cursor) {
+    public static NewsVO parseFromCursor(Context context, Cursor cursor) {
 
         NewsVO news = new NewsVO();
         news.newsId = cursor.getString(cursor.getColumnIndex(NewsContract.NewsEntry.COLUMN_NEWS_ID));
@@ -98,6 +103,93 @@ public class NewsVO {
         news.details = cursor.getString(cursor.getColumnIndex(NewsContract.NewsEntry.COLUMN_DETAILS));
         news.postedDate = cursor.getString(cursor.getColumnIndex(NewsContract.NewsEntry.COLUMN_POSTED_DATE));
 
+        news.publication = PublicationVO.parseFromCursor(cursor);
+        news.images = loadImagesInNews(context, news.newsId);
+        news.favouriteActions = loadFavouriteActionsInNews(context, news.newsId);
+        news.comments = loadCommentActionInNews(context, news.newsId);
+        news.sendTos = loadSendToInNews(context, news.newsId);
+
         return news;
+    }
+
+    private static List<String> loadImagesInNews(Context context, String newsId) {
+        Cursor imagesInNewsCursor = context.getContentResolver().query(NewsContract.ImagesEntry.CONTENT_URI,
+                null,
+                NewsContract.ImagesEntry.COLUMN_NEWS_ID + " = ?", new String[]{newsId},
+                null
+        );
+
+        if (imagesInNewsCursor != null && imagesInNewsCursor.moveToFirst()) {
+            List<String> imagesInNews = new ArrayList<>();
+            do {
+                imagesInNews.add(
+                        imagesInNewsCursor.getString(
+                                imagesInNewsCursor.getColumnIndex(NewsContract.ImagesEntry.COLUMN_NEWS_ID)
+                        ));
+            } while (imagesInNewsCursor.moveToNext());
+            imagesInNewsCursor.close();
+            return imagesInNews;
+        }
+
+        return null;
+    }
+
+    public static List<FavouriteActionVO> loadFavouriteActionsInNews(Context context, String newsId) {
+        Cursor favouriteInNewsCursor = context.getContentResolver().query(NewsContract.FavouriteActionsEntry.CONTENT_URI,
+                null,
+                NewsContract.FavouriteActionsEntry.COLUMN_NEWS_ID + " = ?", new String[]{newsId},
+                null
+        );
+
+        if (favouriteInNewsCursor != null && favouriteInNewsCursor.moveToFirst()) {
+            List<FavouriteActionVO> favoriteInNews = new ArrayList<>();
+            do {
+                favoriteInNews.add(
+                        FavouriteActionVO.parseFromCursor(favouriteInNewsCursor)
+                );
+            } while (favouriteInNewsCursor.moveToNext());
+            favouriteInNewsCursor.close();
+            return favoriteInNews;
+        }
+
+        return null;
+    }
+
+    public static List<CommentsVO> loadCommentActionInNews(Context context, String newsId) {
+        Cursor commentInNewsCursor = context.getContentResolver().query(NewsContract.CommentActionsEntry.CONTENT_URI,
+                null,
+                NewsContract.CommentActionsEntry.COLUMN_NEWS_ID + " = ?", new String[]{newsId},
+                null
+        );
+
+        if (commentInNewsCursor != null && commentInNewsCursor.moveToFirst()) {
+            List<CommentsVO> commentsInNews = new ArrayList<>();
+            do {
+                commentsInNews.add(CommentsVO.parseFromCursor(commentInNewsCursor));
+            } while (commentInNewsCursor.moveToNext());
+            commentInNewsCursor.close();
+            return commentsInNews;
+        }
+
+        return null;
+    }
+
+    public static List<SendToVO> loadSendToInNews(Context context, String newsId) {
+        Cursor sendToInNewCursor = context.getContentResolver().query(NewsContract.SendToEntry.CONTENT_URI,
+                null,
+                NewsContract.SendToEntry.COLUMN_NEWS_ID + " = ?", new String[]{newsId},
+                null
+        );
+
+        if (sendToInNewCursor != null && sendToInNewCursor.moveToFirst()) {
+            List<SendToVO> sendToInNews = new ArrayList<>();
+            do {
+                sendToInNews.add(SendToVO.parseFromCursor(sendToInNewCursor));
+            } while (sendToInNewCursor.moveToNext());
+            sendToInNewCursor.close();
+            return sendToInNews;
+        }
+
+        return null;
     }
 }

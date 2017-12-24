@@ -19,7 +19,7 @@ import com.bnkk.padcmmnews.persistence.NewsContract.ActedUserEntry;
 
 public class NewsDBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "news.db";
 
     private static final String SQL_CREATE_NEWS_TABLE = "CREATE TABLE " + NewsEntry.TABLE_NAME + " (" +
@@ -55,8 +55,8 @@ public class NewsDBHelper extends SQLiteOpenHelper {
             FavouriteActionsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             FavouriteActionsEntry.COLUMN_FAVOURITE_ID + " VARCHAR(5), " +
             FavouriteActionsEntry.COLUMN_FAVOURITE_DATE + " VARCHAR(10), " +
-            FavouriteActionsEntry.COLUMN_NEWS_ID + " VARCHAR(5), " +
             FavouriteActionsEntry.COLUMN_USER_ID + " VARCHAR(5), " +
+            FavouriteActionsEntry.COLUMN_NEWS_ID + " VARCHAR(5), " +
 
             " UNIQUE (" + FavouriteActionsEntry.COLUMN_FAVOURITE_ID + ") ON CONFLICT REPLACE " +
             " );";
@@ -86,7 +86,7 @@ public class NewsDBHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ACTED_USER_TABLE = "CREATE TABLE " + ActedUserEntry.TABLE_NAME + " (" +
             ActedUserEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             ActedUserEntry.COLUMN_USER_ID + " VARCHAR(5), " +
-            ActedUserEntry.TABLE_NAME + " VARCHAR(50), " +
+            ActedUserEntry.COLUMN_USER_NAME + " VARCHAR(50), " +
             ActedUserEntry.COLUMN_PROFILE_IMAGE + " TEXT, " +
 
             " UNIQUE (" + ActedUserEntry.COLUMN_USER_ID + ") ON CONFLICT REPLACE " +

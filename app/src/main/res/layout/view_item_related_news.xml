@@ -12,7 +12,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/iv_news_hero_image"
+            android:id="@+id/iv_related_news_hero_image"
             android:layout_width="match_parent"
             android:layout_height="@dimen/view_item_img_height"
             android:src="@drawable/img_news_dummy_3" />
@@ -21,7 +21,7 @@
             android:id="@+id/iv_publication_logo"
             android:layout_width="@dimen/logo_size"
             android:layout_height="@dimen/logo_size"
-            android:layout_below="@id/iv_news_hero_image"
+            android:layout_below="@id/iv_related_news_hero_image"
             android:layout_marginLeft="@dimen/margin_medium"
             android:layout_marginRight="@dimen/margin_medium"
             android:scaleType="centerCrop"

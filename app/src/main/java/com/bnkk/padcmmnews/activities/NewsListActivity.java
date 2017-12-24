@@ -41,7 +41,7 @@ import butterknife.ButterKnife;
 public class NewsListActivity extends BaseActivity
         implements NewsItemDelegate, LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int NEWS_LIST_LOADER_ID = 100;
+    private static final int NEWS_LIST_LOADER_ID = 1001;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -91,7 +91,9 @@ public class NewsListActivity extends BaseActivity
         mSmartScrollListener = new SmartScrollListener(new SmartScrollListener.OnSmartScrollListener() {
             @Override
             public void onListEndReached() {
-//                Snackbar.make(srvNews, "This is all the data for NOW", Snackbar.LENGTH_LONG).show();
+
+                Snackbar.make(srvNews, "Loading new data", Snackbar.LENGTH_LONG).show();
+                swipeRefreshLayout.setRefreshing(true);
 
                 NewsModel.getObjInstance().loadMoreNews(getApplicationContext());
             }
@@ -173,25 +175,20 @@ public class NewsListActivity extends BaseActivity
     }
 
     @Override
-    public void onTapNews() {
-        Intent intent = NewsDetailsActivity.newIntent(getApplicationContext());
+    public void onTapNews(NewsVO news) {
+        Intent intent = NewsDetailsActivity.newIntent(getApplicationContext(), news.getNewsId());
         startActivity(intent);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onTapNewsEvent(TapNewsEvent event) {
-        event.getNewsId();
-        Intent intent = NewsDetailsActivity.newIntent(getApplicationContext());
-        startActivity(intent);
-    }
-
+    /*
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewsDataLoaded(RestApiEvents.NewsDataLoadedEvent event) {
-        /*
+
         mNewsAdapter.appendNewData(event.getLoadedNews());
         swipeRefreshLayout.setRefreshing(false);
-        */
+
     }
+    */
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onErrorInvokingAPI(RestApiEvents.ErrorInvokingAPIEvent event) {
@@ -217,7 +214,7 @@ public class NewsListActivity extends BaseActivity
             List<NewsVO> newsList = new ArrayList<>();
 
             do {
-                NewsVO news = NewsVO.parseFromCursor(data);
+                NewsVO news = NewsVO.parseFromCursor(getApplicationContext(), data);
                 newsList.add(news);
             } while (data.moveToNext());
 

@@ -40,6 +40,7 @@ public class NewsViewHolder extends BaseViewHolder<NewsVO> {
     TextView tvNewsStaticalData;
 
     private NewsItemDelegate mNewsItemDelegate;
+    private NewsVO news;
 
     public NewsViewHolder(View itemView, NewsItemDelegate newsItemDelegate) {
         super(itemView);
@@ -50,36 +51,73 @@ public class NewsViewHolder extends BaseViewHolder<NewsVO> {
 
     @Override
     public void setData(NewsVO data) {
+        news = data;
+
         if (data != null) {
 
-            if (data.getPublication() != null) {
+            if (data.getPublication().getLogo() != null) {
+                ivPublicationLogo.setVisibility(View.VISIBLE);
                 Glide
                         .with(ivPublicationLogo.getContext())
                         .load(data.getPublication().getLogo())
                         .into(ivPublicationLogo);
+            } else {
+                ivPublicationLogo.setVisibility(View.GONE);
+            }
+
+            if (data.getPublication().getTitle() != null) {
+                tvPublicationName.setVisibility(View.VISIBLE);
                 tvPublicationName.setText(data.getPublication().getTitle());
+            } else {
+                tvPublicationName.setVisibility(View.GONE);
             }
 
-            tvPublishedDate.setText(data.getPostedDate());
-
-            tvBriefNews.setText(data.getBrief());
-            Glide
-                    .with(ivNewsHeroImage.getContext())
-                    .load(data.getImages())
-                    .into(ivNewsHeroImage);
-
-            if (data.getFavouriteActions() != null && data.getComments() != null && data.getSendTos() != null) {
-                tvNewsStaticalData.setText(String.valueOf(data.getFavouriteActions().size())
-                        + " likes - " + String.valueOf(data.getComments().size()) + " comments - Sent to "
-                        + String.valueOf(data.getSendTos().size()) + " people");
+            if (data.getPostedDate() != null) {
+                tvPublishedDate.setVisibility(View.VISIBLE);
+                tvPublishedDate.setText(data.getPostedDate());
+            } else {
+                tvPublishedDate.setVisibility(View.GONE);
             }
+
+            if (data.getBrief() != null) {
+                tvBriefNews.setVisibility(View.VISIBLE);
+                tvBriefNews.setText(data.getBrief());
+            } else {
+                tvBriefNews.setVisibility(View.GONE);
+            }
+
+            if (!data.getImages().isEmpty()) {
+                ivNewsHeroImage.setVisibility(View.VISIBLE);
+                Glide
+                        .with(ivNewsHeroImage.getContext())
+                        .load(data.getImages())
+                        .into(ivNewsHeroImage);
+            } else {
+                ivNewsHeroImage.setVisibility(View.GONE);
+            }
+
+            String newsStatistics = "";
+            if (data.getFavouriteActions() != null) {
+                newsStatistics += String.valueOf(data.getFavouriteActions().size()) + " likes - ";
+            } else {
+                newsStatistics += "0 likes - ";
+            }
+            if (data.getComments() != null) {
+                newsStatistics += String.valueOf(data.getComments().size()) + " comments - ";
+            } else {
+                newsStatistics += "0 comments - ";
+            }
+            if (data.getSendTos() != null) {
+                newsStatistics += "Send to " + String.valueOf(data.getSendTos().size()) + " people";
+            } else {
+                newsStatistics += "Send to 0 people";
+            }
+            tvNewsStaticalData.setText(newsStatistics);
         }
     }
 
     @Override
     public void onClick(View v) {
-        //mNewsItemDelegate.onTapNews();
-
-        EventBus.getDefault().post(new TapNewsEvent("News"));
+        mNewsItemDelegate.onTapNews(news);
     }
 }
