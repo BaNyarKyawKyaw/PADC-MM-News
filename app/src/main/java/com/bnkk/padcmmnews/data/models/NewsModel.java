@@ -12,6 +12,7 @@ import com.bnkk.padcmmnews.data.vo.NewsVO;
 import com.bnkk.padcmmnews.data.vo.PublicationVO;
 import com.bnkk.padcmmnews.data.vo.SendToVO;
 import com.bnkk.padcmmnews.events.RestApiEvents;
+import com.bnkk.padcmmnews.network.MMNewDataAgent;
 import com.bnkk.padcmmnews.network.MMNewsDataAgentImpl;
 import com.bnkk.padcmmnews.persistence.NewsContract;
 import com.bnkk.padcmmnews.utils.AppConstants;
@@ -24,31 +25,34 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * Created by E5-575G on 12/3/2017.
  */
 
 public class NewsModel {
 
-    private static NewsModel objInstance;
-
     private List<NewsVO> mNews;
 
-    private NewsModel() {
+    @Inject
+    MMNewDataAgent mDataAgent;
+
+    @Inject
+    ConfigUtils mConfigUtils;
+
+    public NewsModel(Context context) {
         EventBus.getDefault().register(this);
         mNews = new ArrayList<>();
-    }
 
-    public static NewsModel getObjInstance() {
-        if (objInstance == null) {
-            objInstance = new NewsModel();
-        }
-        return objInstance;
+        MMNewsApp sfcNewsApp = (MMNewsApp) context.getApplicationContext();
+        sfcNewsApp.getAppComponent().inject(this);
     }
 
     public void startLoadingNews(Context context) {
-        MMNewsDataAgentImpl.getObjInstance().loadMMNews(AppConstants.ACCESS_TOKEN,
-                ConfigUtils.getObjInstance().loadPageIndex(), context);
+        mDataAgent.loadMMNews(AppConstants.ACCESS_TOKEN,
+                mConfigUtils.loadPageIndex(),
+                context);
     }
 
     public List<NewsVO> getNews() {
@@ -56,26 +60,27 @@ public class NewsModel {
     }
 
     public void loadMoreNews(Context context) {
-        int pageIndex = ConfigUtils.getObjInstance().loadPageIndex();
-        MMNewsDataAgentImpl.getObjInstance().loadMMNews(AppConstants.ACCESS_TOKEN,
-                pageIndex, context);
+        mDataAgent.loadMMNews(AppConstants.ACCESS_TOKEN,
+                mConfigUtils.loadPageIndex(),
+                context);
     }
 
     public void forceRefreshNews(Context context) {
         mNews = new ArrayList<>();
-        ConfigUtils.getObjInstance().savePageIndex(1);
+        mConfigUtils.savePageIndex(1);
         startLoadingNews(context);
     }
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onNewsDataLoaded(RestApiEvents.NewsDataLoadedEvent event) {
         mNews.addAll(event.getLoadedNews());
-        ConfigUtils.getObjInstance().savePageIndex(event.getLoadedPageIndex() + 1);
+        mConfigUtils.savePageIndex(event.getLoadedPageIndex() + 1);
 
         // Logic to save the data in Persistence Layer
         ContentValues[] newsCVs = new ContentValues[event.getLoadedNews().size()];
         List<ContentValues> publicationCVList = new ArrayList<>();
         List<ContentValues> imagesInNewsCVList = new ArrayList<>();
+
         List<ContentValues> favouriteInNewsCVList = new ArrayList<>();
         List<ContentValues> userInActionCVList = new ArrayList<>();
         List<ContentValues> commentsInNewsCVList = new ArrayList<>();
@@ -116,8 +121,8 @@ public class NewsModel {
                 ContentValues commentsCV = sendTo.parseToContentValues(news.getNewsId());
                 sendToInNewsCVList.add(commentsCV);
 
-                ContentValues sender = sendTo.getSender().parseToContentValues();
-                userInActionCVList.add(sender);
+                ContentValues senderCV = sendTo.getSender().parseToContentValues();
+                userInActionCVList.add(senderCV);
 
                 ContentValues receiverCV = sendTo.getReceiver().parseToContentValues();
                 userInActionCVList.add(receiverCV);
@@ -136,10 +141,6 @@ public class NewsModel {
                 favouriteInNewsCVList.toArray(new ContentValues[0]));
         Log.d(MMNewsApp.LOG_TAG, "insertedFavoriteInAction" + insertedFavoriteInAction);
 
-        int insertedUserInAction = event.getContext().getContentResolver().bulkInsert(NewsContract.ActedUserEntry.CONTENT_URI,
-                userInActionCVList.toArray(new ContentValues[0]));
-        Log.d(MMNewsApp.LOG_TAG, "insertedUserInAction" + insertedUserInAction);
-
         int insertedCommentsInNews = event.getContext().getContentResolver().bulkInsert(NewsContract.CommentActionsEntry.CONTENT_URI,
                 commentsInNewsCVList.toArray(new ContentValues[0]));
         Log.d(MMNewsApp.LOG_TAG, "insertedCommentsInNews" + insertedCommentsInNews);
@@ -148,9 +149,12 @@ public class NewsModel {
                 sendToInNewsCVList.toArray(new ContentValues[0]));
         Log.d(MMNewsApp.LOG_TAG, "insertedSendToInNews" + insertedSendToInNews);
 
+        int insertedUserInAction = event.getContext().getContentResolver().bulkInsert(NewsContract.ActedUserEntry.CONTENT_URI,
+                userInActionCVList.toArray(new ContentValues[0]));
+        Log.d(MMNewsApp.LOG_TAG, "insertedUserInAction" + insertedUserInAction);
+
         int insertedNews = event.getContext().getContentResolver().bulkInsert(NewsContract.NewsEntry.CONTENT_URI,
                 newsCVs);
         Log.d(MMNewsApp.LOG_TAG, "Inserted Row" + insertedNews);
-
     }
 }

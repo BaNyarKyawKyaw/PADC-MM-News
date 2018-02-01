@@ -21,11 +21,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MMNewsDataAgentImpl implements MMNewDataAgent {
 
-    private static MMNewsDataAgentImpl objInstance;
-
     private MMNewsAPI theAPI;
 
-    private MMNewsDataAgentImpl() {
+    public MMNewsDataAgentImpl() {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(60, TimeUnit.SECONDS)
                 .writeTimeout(60, TimeUnit.SECONDS)
@@ -39,13 +37,6 @@ public class MMNewsDataAgentImpl implements MMNewDataAgent {
                 .build();
 
         theAPI = retrofit.create(MMNewsAPI.class); // to create API instance
-    }
-
-    public static MMNewsDataAgentImpl getObjInstance() {
-        if (objInstance == null) {
-            objInstance = new MMNewsDataAgentImpl();
-        }
-        return objInstance;
     }
 
     @Override

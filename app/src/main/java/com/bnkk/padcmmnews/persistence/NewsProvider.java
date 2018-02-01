@@ -29,6 +29,9 @@ public class NewsProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     private static final SQLiteQueryBuilder sNewsWithPublication_IJ;
+    private static final SQLiteQueryBuilder sFavoriteActionWithUser_IJ;
+    private static final SQLiteQueryBuilder sCommentActionWithUser_IJ;
+    private static final SQLiteQueryBuilder sSendActionWithUser_IJ;
 
     static {
         sNewsWithPublication_IJ = new SQLiteQueryBuilder();
@@ -38,11 +41,7 @@ public class NewsProvider extends ContentProvider {
                         NewsContract.NewsEntry.TABLE_NAME + "." + NewsContract.NewsEntry.COLUMN_PUBLICATION_ID + " = " +
                         NewsContract.PublicationsEntry.TABLE_NAME + "." + NewsContract.PublicationsEntry.COLUMN_PUBLICATION_ID
         );
-    }
 
-    private static final SQLiteQueryBuilder sFavoriteActionWithUser_IJ;
-
-    static {
         sFavoriteActionWithUser_IJ = new SQLiteQueryBuilder();
         sFavoriteActionWithUser_IJ.setTables(
                 NewsContract.FavouriteActionsEntry.TABLE_NAME + " INNER JOIN " +
@@ -50,12 +49,7 @@ public class NewsProvider extends ContentProvider {
                         NewsContract.FavouriteActionsEntry.TABLE_NAME + "." + NewsContract.FavouriteActionsEntry.COLUMN_USER_ID + " = " +
                         NewsContract.ActedUserEntry.TABLE_NAME + "." + NewsContract.ActedUserEntry.COLUMN_USER_ID
         );
-    }
 
-
-    private static final SQLiteQueryBuilder sCommentActionWithUser_IJ;
-
-    static {
         sCommentActionWithUser_IJ = new SQLiteQueryBuilder();
         sCommentActionWithUser_IJ.setTables(
                 NewsContract.CommentActionsEntry.TABLE_NAME + " INNER JOIN " +
@@ -63,11 +57,7 @@ public class NewsProvider extends ContentProvider {
                         NewsContract.CommentActionsEntry.TABLE_NAME + "." + NewsContract.CommentActionsEntry.COLUMN_USER_ID + " = " +
                         NewsContract.ActedUserEntry.TABLE_NAME + "." + NewsContract.ActedUserEntry.COLUMN_USER_ID
         );
-    }
 
-    private static final SQLiteQueryBuilder sSendActionWithUser_IJ;
-
-    static {
         sSendActionWithUser_IJ = new SQLiteQueryBuilder();
         sSendActionWithUser_IJ.setTables(
                 NewsContract.SendToEntry.TABLE_NAME + " INNER JOIN " +

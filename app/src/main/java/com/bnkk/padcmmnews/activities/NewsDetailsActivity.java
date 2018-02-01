@@ -14,12 +14,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bnkk.padcmmnews.R;
 import com.bnkk.padcmmnews.adapters.NewsImagesPagerAdapter;
 import com.bnkk.padcmmnews.adapters.RelatedNewsAdapter;
 import com.bnkk.padcmmnews.data.vo.NewsVO;
 import com.bnkk.padcmmnews.persistence.NewsContract;
+import com.bumptech.glide.Glide;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,7 +31,8 @@ import butterknife.ButterKnife;
  * Created by E5-575G on 11/11/2017.
  */
 
-public class NewsDetailsActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class NewsDetailsActivity extends BaseActivity
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String IE_NEWS_ID = "IE_NEWS_ID";
     private static final int NEWS_DETAILS_LOADER_ID = 1002;
@@ -39,7 +43,20 @@ public class NewsDetailsActivity extends BaseActivity implements LoaderManager.L
     @BindView(R.id.rv_related_news_list)
     RecyclerView rvRelatedNews;
 
+    @BindView(R.id.iv_publication_logo)
+    ImageView ivPublicationLogo;
+
+    @BindView(R.id.tv_publication_name)
+    TextView tvPublicationName;
+
+    @BindView(R.id.tv_published_date)
+    TextView tvPublishedDate;
+
+    @BindView(R.id.tv_news_details)
+    TextView tvNewsDetails;
+
     private String mNewsId;
+    private NewsImagesPagerAdapter mNewsImagesPagerAdapter;
 
     /**
      * Create intent object to start NewsDetailsActivity
@@ -60,8 +77,10 @@ public class NewsDetailsActivity extends BaseActivity implements LoaderManager.L
         setContentView(R.layout.activity_news_details);
         ButterKnife.bind(this, this);
 
-        NewsImagesPagerAdapter newsImagesPagerAdapter = new NewsImagesPagerAdapter(getApplicationContext());
-        vpNewsDetailsImages.setAdapter(newsImagesPagerAdapter);
+        mNewsImagesPagerAdapter = new NewsImagesPagerAdapter(getApplicationContext());
+        vpNewsDetailsImages.setAdapter(mNewsImagesPagerAdapter);
+
+        vpNewsDetailsImages.setOffscreenPageLimit(mNewsImagesPagerAdapter.getCount());
 
         rvRelatedNews.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
                 LinearLayoutManager.VERTICAL, false));
@@ -74,6 +93,16 @@ public class NewsDetailsActivity extends BaseActivity implements LoaderManager.L
         } else {
             getSupportLoaderManager().initLoader(NEWS_DETAILS_LOADER_ID, null, this);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override
@@ -100,6 +129,18 @@ public class NewsDetailsActivity extends BaseActivity implements LoaderManager.L
     }
 
     private void bindData(NewsVO news) {
+        tvPublicationName.setText(news.getPublication().getTitle());
+        tvPublishedDate.setText(news.getPostedDate());
+        tvNewsDetails.setText(news.getDetails());
 
+        Glide.with(this)
+                .load(news.getPublication().getLogo())
+                .into(ivPublicationLogo);
+
+        if(news.getImages().isEmpty()) {
+
+        } else {
+            mNewsImagesPagerAdapter.setImages(news.getImages());
+        }
     }
 }

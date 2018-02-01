@@ -14,8 +14,6 @@ public class SmartScrollListener extends RecyclerView.OnScrollListener {
     }
 
     private boolean isListEndReached = false;
-    //private int visibleItemCount, pastVisibleItems, totalItemCount;
-    //private int previousDy, currentDy;  // Dy means delta Y
 
     private OnSmartScrollListener mSmartScrollListener;
 
@@ -26,16 +24,6 @@ public class SmartScrollListener extends RecyclerView.OnScrollListener {
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
-        /*
-        currentDy = dy;
-        if (currentDy > previousDy) {
-            // from top to bottom
-            isListEndReached = true;
-        } else if (currentDy < previousDy) {
-            // from bottom to top
-            isListEndReached = false;
-        }
-        */
 
         int visibleItemCount = recyclerView.getLayoutManager().getChildCount();
         int totalItemCount = recyclerView.getLayoutManager().getItemCount();
@@ -45,27 +33,14 @@ public class SmartScrollListener extends RecyclerView.OnScrollListener {
         if ((visibleItemCount + pastVisibleItems) < totalItemCount) {
             isListEndReached = false;
         }
-
-        //previousDy = currentDy;
     }
 
     @Override
     public void onScrollStateChanged(RecyclerView recyclerView, int scrollState) {
         super.onScrollStateChanged(recyclerView, scrollState);
-        /*
-        if (scrollState == RecyclerView.SCROLL_STATE_IDLE) {
-            if ((visibleItemCount + pastVisibleItems) >= totalItemCount
-                    && !isListEndReached) {
-                isListEndReached = true;
-                mSmartScrollListener.onListEndReached();
-            }
-        }
-        */
-
         if (scrollState == RecyclerView.SCROLL_STATE_IDLE
-                && ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition()
-                == recyclerView.getAdapter().getItemCount() - 1
-                && isListEndReached) {
+                && ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition() == recyclerView.getAdapter().getItemCount() - 1
+                && !isListEndReached) {
             isListEndReached = true;
             mSmartScrollListener.onListEndReached();
         }

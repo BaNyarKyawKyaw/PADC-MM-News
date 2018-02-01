@@ -1,5 +1,6 @@
 package com.bnkk.padcmmnews.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.design.widget.FloatingActionButton;
@@ -12,10 +13,12 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.bnkk.padcmmnews.MMNewsApp;
 import com.bnkk.padcmmnews.R;
 import com.bnkk.padcmmnews.adapters.NewsAdapter;
 import com.bnkk.padcmmnews.components.EmptyViewPod;
@@ -25,7 +28,8 @@ import com.bnkk.padcmmnews.data.models.NewsModel;
 import com.bnkk.padcmmnews.data.vo.NewsVO;
 import com.bnkk.padcmmnews.delegates.NewsItemDelegate;
 import com.bnkk.padcmmnews.events.RestApiEvents;
-import com.bnkk.padcmmnews.events.TapNewsEvent;
+import com.bnkk.padcmmnews.mvp.presenters.NewsListPresenter;
+import com.bnkk.padcmmnews.mvp.views.NewsListView;
 import com.bnkk.padcmmnews.persistence.NewsContract;
 
 import org.greenrobot.eventbus.EventBus;
@@ -33,13 +37,16 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class NewsListActivity extends BaseActivity
-        implements NewsItemDelegate, LoaderManager.LoaderCallbacks<Cursor> {
+        implements LoaderManager.LoaderCallbacks<Cursor>, NewsListView {
 
     private static final int NEWS_LIST_LOADER_ID = 1001;
 
@@ -56,13 +63,22 @@ public class NewsListActivity extends BaseActivity
     SwipeRefreshLayout swipeRefreshLayout;
 
     private SmartScrollListener mSmartScrollListener;
+
     private NewsAdapter mNewsAdapter;
+
+    @Inject
+    NewsListPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_list);
         ButterKnife.bind(this, this);
+
+        MMNewsApp mmNewsApp = (MMNewsApp) getApplicationContext();
+        mmNewsApp.getAppComponent().inject(this);
+
+        mPresenter.onCreate(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,15 +93,20 @@ public class NewsListActivity extends BaseActivity
                         */
 
                 //drawerLayout.openDrawer(GravityCompat.START);
+
+                /*
                 Intent intent = LoginRegisterActivity.newIntent(getApplicationContext());
                 startActivity(intent);
+                */
+                Date today = new Date();
+                Log.d(MMNewsApp.LOG_TAG, "Today (with default format) : " + today.toString());
             }
         });
 
         srvNews.setEmptyView(vpEmptyNews);
         srvNews.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
                 LinearLayoutManager.VERTICAL, false));
-        mNewsAdapter = new NewsAdapter(getApplicationContext(), this);
+        mNewsAdapter = new NewsAdapter(getApplicationContext(), mPresenter);
         srvNews.setAdapter(mNewsAdapter);
 
         mSmartScrollListener = new SmartScrollListener(new SmartScrollListener.OnSmartScrollListener() {
@@ -95,14 +116,14 @@ public class NewsListActivity extends BaseActivity
                 Snackbar.make(srvNews, "Loading new data", Snackbar.LENGTH_LONG).show();
                 swipeRefreshLayout.setRefreshing(true);
 
-                NewsModel.getObjInstance().loadMoreNews(getApplicationContext());
+                mPresenter.onNewsListEndReach(getApplicationContext());
             }
         });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                NewsModel.getObjInstance().forceRefreshNews(getApplicationContext());
+                mPresenter.onForceRefresh(getApplicationContext());
             }
         });
 
@@ -112,30 +133,9 @@ public class NewsListActivity extends BaseActivity
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this);
-        }
-
-        List<NewsVO> newsList = NewsModel.getObjInstance().getNews();
-        if (!newsList.isEmpty()) {
-            mNewsAdapter.setNewData(newsList);
-        } else {
-            swipeRefreshLayout.setRefreshing(true);
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_news_list, menu);
         return true;
     }
 
@@ -155,40 +155,34 @@ public class NewsListActivity extends BaseActivity
     }
 
     @Override
-    public void onTapComment() {
-
+    protected void onStart() {
+        super.onStart();
+        mPresenter.onStart();
     }
 
     @Override
-    public void onTapSendTo() {
-
+    protected void onResume() {
+        super.onResume();
+        mPresenter.onResume();
     }
 
     @Override
-    public void onTapFavourite() {
-
+    protected void onPause() {
+        super.onPause();
+        mPresenter.onPause();
     }
 
     @Override
-    public void onTapStatistics() {
-
+    protected void onStop() {
+        super.onStop();
+        mPresenter.onStop();
     }
 
     @Override
-    public void onTapNews(NewsVO news) {
-        Intent intent = NewsDetailsActivity.newIntent(getApplicationContext(), news.getNewsId());
-        startActivity(intent);
+    protected void onDestroy() {
+        super.onDestroy();
+        mPresenter.onDestroy();
     }
-
-    /*
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNewsDataLoaded(RestApiEvents.NewsDataLoadedEvent event) {
-
-        mNewsAdapter.appendNewData(event.getLoadedNews());
-        swipeRefreshLayout.setRefreshing(false);
-
-    }
-    */
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onErrorInvokingAPI(RestApiEvents.ErrorInvokingAPIEvent event) {
@@ -209,22 +203,33 @@ public class NewsListActivity extends BaseActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        if (data != null && data.moveToFirst()) {
-
-            List<NewsVO> newsList = new ArrayList<>();
-
-            do {
-                NewsVO news = NewsVO.parseFromCursor(getApplicationContext(), data);
-                newsList.add(news);
-            } while (data.moveToNext());
-
-            mNewsAdapter.setNewData(newsList);
-            swipeRefreshLayout.setRefreshing(false);
-        }
+        mPresenter.onDataLoaded(getApplicationContext(), data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    @Override
+    public void displayNewsList(List<NewsVO> newsList) {
+        mNewsAdapter.setNewData(newsList);
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void showLoading() {
+        swipeRefreshLayout.setRefreshing(true);
+    }
+
+    @Override
+    public void navigateToNewsDetails(NewsVO news) {
+        Intent intent = NewsDetailsActivity.newIntent(getApplicationContext(), news.getNewsId());
+        startActivity(intent);
+    }
+
+    @Override
+    public Context getContext() {
+        return getApplicationContext();
     }
 }

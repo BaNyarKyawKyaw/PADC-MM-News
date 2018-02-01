@@ -40,7 +40,6 @@ public class NewsViewHolder extends BaseViewHolder<NewsVO> {
     TextView tvNewsStaticalData;
 
     private NewsItemDelegate mNewsItemDelegate;
-    private NewsVO news;
 
     public NewsViewHolder(View itemView, NewsItemDelegate newsItemDelegate) {
         super(itemView);
@@ -51,7 +50,7 @@ public class NewsViewHolder extends BaseViewHolder<NewsVO> {
 
     @Override
     public void setData(NewsVO data) {
-        news = data;
+        mData = data;
 
         if (data != null) {
 
@@ -90,7 +89,7 @@ public class NewsViewHolder extends BaseViewHolder<NewsVO> {
                 ivNewsHeroImage.setVisibility(View.VISIBLE);
                 Glide
                         .with(ivNewsHeroImage.getContext())
-                        .load(data.getImages())
+                        .load(data.getImages().get(0))
                         .into(ivNewsHeroImage);
             } else {
                 ivNewsHeroImage.setVisibility(View.GONE);
@@ -118,6 +117,6 @@ public class NewsViewHolder extends BaseViewHolder<NewsVO> {
 
     @Override
     public void onClick(View v) {
-        mNewsItemDelegate.onTapNews(news);
+        mNewsItemDelegate.onTapNews(mData);
     }
 }

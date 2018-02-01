@@ -19,7 +19,7 @@ import com.bnkk.padcmmnews.persistence.NewsContract.ActedUserEntry;
 
 public class NewsDBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "news.db";
 
     private static final String SQL_CREATE_NEWS_TABLE = "CREATE TABLE " + NewsEntry.TABLE_NAME + " (" +
@@ -31,7 +31,7 @@ public class NewsDBHelper extends SQLiteOpenHelper {
             NewsEntry.COLUMN_PUBLICATION_ID + " VARCHAR(5), " +
 
             " UNIQUE (" + NewsEntry.COLUMN_NEWS_ID + ") ON CONFLICT REPLACE" +
-            " );";
+            ");";
 
     private static final String SQL_CREATE_IMAGES_TABLE = "CREATE TABLE " + ImagesEntry.TABLE_NAME + " (" +
             ImagesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -39,7 +39,7 @@ public class NewsDBHelper extends SQLiteOpenHelper {
             ImagesEntry.COLUMN_NEWS_ID + " VARCHAR(5), " +
 
             " UNIQUE (" + ImagesEntry.COLUMN_IMAGE_URL + ") ON CONFLICT REPLACE" +
-            " );";
+            ");";
 
     private static final String SQL_CREATE_PUBLICATION_TABLE = "CREATE TABLE " + PublicationsEntry.TABLE_NAME + " (" +
             PublicationsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -47,9 +47,8 @@ public class NewsDBHelper extends SQLiteOpenHelper {
             PublicationsEntry.COLUMN_TITLE + " TEXT, " +
             PublicationsEntry.COLUMN_LOGO + " TEXT, " +
 
-            " UNIQUE (" + PublicationsEntry.COLUMN_PUBLICATION_ID + ") ON CONFLICT REPLACE, " +
-            " UNIQUE (" + PublicationsEntry.COLUMN_TITLE + ") ON CONFLICT REPLACE" +
-            " );";
+            " UNIQUE (" + PublicationsEntry.COLUMN_PUBLICATION_ID + ") ON CONFLICT REPLACE" +
+            ");";
 
     private static final String SQL_CREATE_FAVOURITE_ACTIONS_TABLE = "CREATE TABLE " + FavouriteActionsEntry.TABLE_NAME + " (" +
             FavouriteActionsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -58,8 +57,8 @@ public class NewsDBHelper extends SQLiteOpenHelper {
             FavouriteActionsEntry.COLUMN_USER_ID + " VARCHAR(5), " +
             FavouriteActionsEntry.COLUMN_NEWS_ID + " VARCHAR(5), " +
 
-            " UNIQUE (" + FavouriteActionsEntry.COLUMN_FAVOURITE_ID + ") ON CONFLICT REPLACE " +
-            " );";
+            " UNIQUE (" + FavouriteActionsEntry.COLUMN_FAVOURITE_ID + ") ON CONFLICT REPLACE" +
+            ");";
 
     private static final String SQL_CREATE_COMMENT_ACTIONS_TABLE = "CREATE TABLE " + CommentActionsEntry.TABLE_NAME + " (" +
             CommentActionsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -69,8 +68,8 @@ public class NewsDBHelper extends SQLiteOpenHelper {
             CommentActionsEntry.COLUMN_USER_ID + " VARCHAR(5), " +
             CommentActionsEntry.COLUMN_NEWS_ID + " VARCHAR(5), " +
 
-            " UNIQUE (" + CommentActionsEntry.COLUMN_COMMENT_ID + ") ON CONFLICT REPLACE " +
-            " );";
+            " UNIQUE (" + CommentActionsEntry.COLUMN_COMMENT_ID + ") ON CONFLICT REPLACE" +
+            ");";
 
     private static final String SQL_CREATE_SEND_TO_TABLE = "CREATE TABLE " + SendToEntry.TABLE_NAME + " (" +
             SendToEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -80,8 +79,8 @@ public class NewsDBHelper extends SQLiteOpenHelper {
             SendToEntry.COLUMN_RECEIVER_ID + " VARCHAR(5), " +
             SendToEntry.COLUMN_NEWS_ID + " VARCHAR(5), " +
 
-            " UNIQUE (" + SendToEntry.COLUMN_SEND_TO_ID + ") ON CONFLICT REPLACE " +
-            " );";
+            " UNIQUE (" + SendToEntry.COLUMN_SEND_TO_ID + ") ON CONFLICT REPLACE" +
+            ");";
 
     private static final String SQL_CREATE_ACTED_USER_TABLE = "CREATE TABLE " + ActedUserEntry.TABLE_NAME + " (" +
             ActedUserEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -89,8 +88,8 @@ public class NewsDBHelper extends SQLiteOpenHelper {
             ActedUserEntry.COLUMN_USER_NAME + " VARCHAR(50), " +
             ActedUserEntry.COLUMN_PROFILE_IMAGE + " TEXT, " +
 
-            " UNIQUE (" + ActedUserEntry.COLUMN_USER_ID + ") ON CONFLICT REPLACE " +
-            " );";
+            " UNIQUE (" + ActedUserEntry.COLUMN_USER_ID + ") ON CONFLICT REPLACE" +
+            ");";
 
     public NewsDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

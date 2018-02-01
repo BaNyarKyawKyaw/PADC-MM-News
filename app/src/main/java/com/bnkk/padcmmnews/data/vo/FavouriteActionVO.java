@@ -12,10 +12,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class FavouriteActionVO {
 
-    @SerializedName("favourite-id")
+    @SerializedName("favorite-id")
     private String favouriteId;
 
-    @SerializedName("favourite-date")
+    @SerializedName("favorite-date")
     private String favouriteDate;
 
     @SerializedName("acted-user")

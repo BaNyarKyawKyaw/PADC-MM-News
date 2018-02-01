@@ -13,6 +13,7 @@ import com.bnkk.padcmmnews.delegates.LoginRegisterDelegate;
 import com.bnkk.padcmmnews.fragments.LoginFragment;
 import com.bnkk.padcmmnews.fragments.RegisterFragment;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -20,10 +21,14 @@ import butterknife.ButterKnife;
  * Created by E5-575G on 11/30/2017.
  */
 
-public class LoginRegisterActivity extends BaseActivity implements LoginRegisterDelegate {
+public class LoginRegisterActivity extends BaseActivity
+        implements LoginRegisterDelegate {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindString(R.string.hint_enter_email)
+    String hintEmail;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, LoginRegisterActivity.class);
@@ -61,7 +66,7 @@ public class LoginRegisterActivity extends BaseActivity implements LoginRegister
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
                 .replace(R.id.fl_container, RegisterFragment.newInstance())
-                .addToBackStack("")
+                .addToBackStack(null)
                 .commit();
     }
 

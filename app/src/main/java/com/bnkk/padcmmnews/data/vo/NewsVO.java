@@ -71,14 +71,23 @@ public class NewsVO {
     }
 
     public List<FavouriteActionVO> getFavouriteActions() {
+        if (favouriteActions == null)
+            favouriteActions = new ArrayList<>();
+
         return favouriteActions;
     }
 
     public List<CommentsVO> getComments() {
+        if (comments == null)
+            return new ArrayList<>();
+
         return comments;
     }
 
     public List<SendToVO> getSendTos() {
+        if (sendTos == null)
+            return new ArrayList<>();
+
         return sendTos;
     }
 
