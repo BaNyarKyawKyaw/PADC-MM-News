@@ -2,12 +2,14 @@ package com.bnkk.padcmmnews.mvp.presenters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.bnkk.padcmmnews.MMNewsApp;
 import com.bnkk.padcmmnews.data.models.NewsModel;
 import com.bnkk.padcmmnews.data.vo.NewsVO;
 import com.bnkk.padcmmnews.delegates.NewsItemDelegate;
 import com.bnkk.padcmmnews.mvp.views.NewsListView;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,5 +95,27 @@ public class NewsListPresenter extends BasePresenter<NewsListView> implements Ne
     @Override
     public void onTapNews(NewsVO news) {
         mView.navigateToNewsDetails(news);
+    }
+
+    public void onSuccessGoogleSign(GoogleSignInAccount signInAccount) {
+        mNewsModel.authenticateUserWithGoogleAccount(signInAccount, new NewsModel.UserAuthenticateDelegate() {
+            @Override
+            public void onSuccessAuthenticate(GoogleSignInAccount signInAccount) {
+                Log.d(MMNewsApp.LOG_TAG, "onSuccessAuthenticate : " + signInAccount.getDisplayName());
+            }
+
+            @Override
+            public void onFailureAuthenticate(String errorMsg) {
+                Log.d(MMNewsApp.LOG_TAG, "onFailureAuthenticate : " + errorMsg);
+            }
+        });
+    }
+
+    public void onStartPublishingNews() {
+        if (mNewsModel.isUserAuthentiacte()) {
+            mView.showAddNewsScreen();
+        } else {
+            mView.signInGoogle();
+        }
     }
 }

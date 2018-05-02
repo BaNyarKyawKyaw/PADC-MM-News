@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.bnkk.padcmmnews.MMNewsApp;
 import com.bnkk.padcmmnews.data.models.NewsModel;
+import com.bnkk.padcmmnews.mvp.presenters.AddNewsPresenter;
 import com.bnkk.padcmmnews.mvp.presenters.NewsListPresenter;
 
 import javax.inject.Singleton;
@@ -39,5 +40,10 @@ public class AppModule {
     @Provides
     public NewsListPresenter provideNewsListPresenter() {
         return new NewsListPresenter();
+    }
+
+    @Provides
+    public AddNewsPresenter provideAddNewsPresenter() {
+        return new AddNewsPresenter();
     }
 }

@@ -3,7 +3,7 @@ package com.bnkk.padcmmnews.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.bnkk.padcmmnews.MMNewsApp;
 import com.bnkk.padcmmnews.R;
@@ -24,31 +25,35 @@ import com.bnkk.padcmmnews.adapters.NewsAdapter;
 import com.bnkk.padcmmnews.components.EmptyViewPod;
 import com.bnkk.padcmmnews.components.SmartRecyclerView;
 import com.bnkk.padcmmnews.components.SmartScrollListener;
-import com.bnkk.padcmmnews.data.models.NewsModel;
 import com.bnkk.padcmmnews.data.vo.NewsVO;
-import com.bnkk.padcmmnews.delegates.NewsItemDelegate;
 import com.bnkk.padcmmnews.events.RestApiEvents;
 import com.bnkk.padcmmnews.mvp.presenters.NewsListPresenter;
 import com.bnkk.padcmmnews.mvp.views.NewsListView;
 import com.bnkk.padcmmnews.persistence.NewsContract;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class NewsListActivity extends BaseActivity
-        implements LoaderManager.LoaderCallbacks<Cursor>, NewsListView {
+        implements LoaderManager.LoaderCallbacks<Cursor>, NewsListView,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private static final int NEWS_LIST_LOADER_ID = 1001;
+    protected static final int RC_GOOGLE_SIGN_IN = 1236;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -69,6 +74,8 @@ public class NewsListActivity extends BaseActivity
     @Inject
     NewsListPresenter mPresenter;
 
+    protected GoogleApiClient mGoogleApiClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,25 +90,25 @@ public class NewsListActivity extends BaseActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*
+
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                        */
 
-                //drawerLayout.openDrawer(GravityCompat.START);
+                drawerLayout.openDrawer(GravityCompat.START);
 
-                /*
                 Intent intent = LoginRegisterActivity.newIntent(getApplicationContext());
                 startActivity(intent);
-                */
+
                 Date today = new Date();
                 Log.d(MMNewsApp.LOG_TAG, "Today (with default format) : " + today.toString());
             }
         });
+        */
 
         srvNews.setEmptyView(vpEmptyNews);
         srvNews.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
@@ -130,6 +137,24 @@ public class NewsListActivity extends BaseActivity
         srvNews.addOnScrollListener(mSmartScrollListener);
 
         getSupportLoaderManager().initLoader(NEWS_LIST_LOADER_ID, null, this);
+
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("776079349956-bmb7ts23uiubbaufrs972rp5h58vgkbl.apps.googleusercontent.com")
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(getApplicationContext())
+                .enableAutoManage(this /*FragmentActivity*/, this /*OnConnectionFailedListener*/)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
+                .build();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RC_GOOGLE_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            processGoogleSignInResult(result);
+        }
     }
 
     @Override
@@ -231,5 +256,40 @@ public class NewsListActivity extends BaseActivity
     @Override
     public Context getContext() {
         return getApplicationContext();
+    }
+
+    @Override
+    public void showAddNewsScreen() {
+        Intent intent = AddNewsActivity.newIntent(getApplicationContext());
+        startActivity(intent);
+    }
+
+    @Override
+    public void signInGoogle() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(getApplicationContext(), "onConnectionFailed : " + connectionResult.getErrorMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @OnClick(R.id.fab)
+    public void onTapFab(View view) {
+        //signInWithGoogle();
+        mPresenter.onStartPublishingNews();
+    }
+
+    private void processGoogleSignInResult(GoogleSignInResult signInResult) {
+        if (signInResult.isSuccess()) {
+            // Google Sign-In was successful, authenticate with Firebase
+            GoogleSignInAccount account = signInResult.getSignInAccount();
+            mPresenter.onSuccessGoogleSign(account);
+        } else {
+            // Google Sign-In failed
+            Log.e(MMNewsApp.LOG_TAG, "Google Sign-In failed.");
+            Snackbar.make(srvNews, "Your Google sign-in failed.", Snackbar.LENGTH_LONG).show();
+        }
     }
 }

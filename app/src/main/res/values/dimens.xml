@@ -38,4 +38,7 @@
     <dimen name="button_large_size">54dp</dimen>
     <dimen name="news_details_publication_logo_margin_button">36dp</dimen>
     <dimen name="view_item_img_height">200dp</dimen>
+    <dimen name="toolbar_margin">0dp</dimen>
+    <dimen name="bg_dialog_button_radius">4dp</dimen>
+    <dimen name="items_photo_size">150dp</dimen>
 </resources>

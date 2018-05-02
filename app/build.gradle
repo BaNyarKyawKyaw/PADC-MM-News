@@ -43,8 +43,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
 
-    implementation 'com.github.bumptech.glide:glide:4.4.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
 
     /*
     compile 'com.google.dagger:dagger-android:2.14.1'
@@ -57,4 +56,13 @@ dependencies {
     provided 'javax.annotation:jsr250-api:1.0'
 
     implementation 'net.aungpyaephyo:mmtextview:1.1'
+
+    compile 'com.google.android.gms:play-services-auth:11.0.4'
+
+    compile 'com.google.firebase:firebase-core:11.0.4'
+    compile 'com.google.firebase:firebase-database:11.0.4'
+    compile 'com.google.firebase:firebase-auth:11.0.4'
+    compile 'com.google.firebase:firebase-storage:11.0.4'
 }
+
+apply plugin: 'com.google.gms.google-services'

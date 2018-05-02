@@ -43,6 +43,17 @@ public class NewsVO {
     @SerializedName("sent-tos")
     private List<SendToVO> sendTos;
 
+    public NewsVO() {
+    }
+
+    public NewsVO(String brief, String details, List<String> images, String postedDate) {
+        this.newsId = String.valueOf(System.currentTimeMillis() / 1000);
+        this.brief = brief;
+        this.details = details;
+        this.images = images;
+        this.postedDate = postedDate;
+    }
+
     public String getNewsId() {
         return newsId;
     }
@@ -91,6 +102,42 @@ public class NewsVO {
         return sendTos;
     }
 
+    public void setNewsId(String newsId) {
+        this.newsId = newsId;
+    }
+
+    public void setBrief(String brief) {
+        this.brief = brief;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public void setImages(List<String> images) {
+        this.images = images;
+    }
+
+    public void setPostedDate(String postedDate) {
+        this.postedDate = postedDate;
+    }
+
+    public void setPublication(PublicationVO publication) {
+        this.publication = publication;
+    }
+
+    public void setFavouriteActions(List<FavouriteActionVO> favouriteActions) {
+        this.favouriteActions = favouriteActions;
+    }
+
+    public void setComments(List<CommentsVO> comments) {
+        this.comments = comments;
+    }
+
+    public void setSendTos(List<SendToVO> sendTos) {
+        this.sendTos = sendTos;
+    }
+
     public ContentValues parseToContentValues() {
 
         ContentValues contentValues = new ContentValues();
@@ -99,7 +146,9 @@ public class NewsVO {
         contentValues.put(NewsContract.NewsEntry.COLUMN_BRIEF, brief);
         contentValues.put(NewsContract.NewsEntry.COLUMN_DETAILS, details);
         contentValues.put(NewsContract.NewsEntry.COLUMN_POSTED_DATE, postedDate);
-        contentValues.put(NewsContract.NewsEntry.COLUMN_PUBLICATION_ID, publication.getPublicationId());
+        if (publication != null) {
+            contentValues.put(NewsContract.NewsEntry.COLUMN_PUBLICATION_ID, publication.getPublicationId());
+        }
 
         return contentValues;
     }

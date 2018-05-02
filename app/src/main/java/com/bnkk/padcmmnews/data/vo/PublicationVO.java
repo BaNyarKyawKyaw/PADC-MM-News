@@ -54,4 +54,12 @@ public class PublicationVO {
 
         return publicationVO;
     }
+
+    public static PublicationVO dummyPublication() {
+        PublicationVO publicationVO = new PublicationVO();
+        publicationVO.publicationId = "pub719";
+        publicationVO.title = "BBC Burmese";
+        publicationVO.logo = "http://www.bbc.co.uk/news/special/2015/newsspec_11063/burmese_1024x576.png";
+        return publicationVO;
+    }
 }
